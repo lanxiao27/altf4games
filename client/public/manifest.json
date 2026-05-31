@@ -1,0 +1,17 @@
+{
+  "short_name": "ALT F4",
+  "name": "ALT F4 Games",
+  "description": "Party games that end friendships",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#0d0d0d",
+  "theme_color": "#0d0d0d",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    }
+  ]
+}
