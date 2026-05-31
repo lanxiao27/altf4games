@@ -454,6 +454,117 @@ function LobbyScreen({ room, roomCode, isHost, username, game, onStart, error })
   );
 }
 
+function RoleArt({ role }) {
+  if (role?.id === "killer") {
+    return (
+      <svg viewBox="0 0 160 160" width="140" height="140" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="80" cy="60" r="32" fill="#2a1a1a"/>
+        <ellipse cx="80" cy="58" rx="22" ry="24" fill="#f5c5a3"/>
+        <path d="M58 50 Q60 34 80 32 Q100 34 102 50 Q98 40 88 37 Q80 35 72 37 Q62 40 58 50Z" fill="#1a1a1a"/>
+        <path d="M56 50 Q54 42 60 36 Q68 29 80 28 Q92 29 100 36 Q106 42 104 50" fill="none" stroke="#111" stroke-width="2"/>
+        <ellipse cx="70" cy="58" rx="5" ry="4" fill="#fff"/>
+        <ellipse cx="90" cy="58" rx="5" ry="4" fill="#fff"/>
+        <ellipse cx="71" cy="59" rx="3" ry="3" fill="#1a1a1a"/>
+        <ellipse cx="91" cy="59" rx="3" ry="3" fill="#1a1a1a"/>
+        <ellipse cx="72" cy="58" rx="1" ry="1" fill="#fff"/>
+        <ellipse cx="92" cy="58" rx="1" ry="1" fill="#fff"/>
+        <path d="M66 54 Q70 51 74 54" fill="none" stroke="#1a1a1a" stroke-width="1.2" stroke-linecap="round"/>
+        <path d="M83 67 Q80 72 77 67" fill="none" stroke="#c8906a" stroke-width="1.5" stroke-linecap="round"/>
+        <ellipse cx="65" cy="65" rx="4" ry="2.5" fill="#f0a88a" opacity="0.5"/>
+        <ellipse cx="95" cy="65" rx="4" ry="2.5" fill="#f0a88a" opacity="0.5"/>
+        <rect x="58" y="88" width="44" height="42" rx="10" fill="#1a0a0a"/>
+        <rect x="66" y="98" width="12" height="28" rx="5" fill="#110808"/>
+        <rect x="82" y="98" width="12" height="28" rx="5" fill="#110808"/>
+        <rect x="66" y="120" width="9" height="10" rx="3" fill="#0a0505"/>
+        <rect x="85" y="120" width="9" height="10" rx="3" fill="#0a0505"/>
+        <rect x="46" y="94" width="13" height="30" rx="5" fill="#1a0a0a"/>
+        <rect x="101" y="94" width="13" height="30" rx="5" fill="#1a0a0a"/>
+        <circle cx="48" cy="122" r="6" fill="#f5c5a3"/>
+        <circle cx="112" cy="122" r="6" fill="#f5c5a3"/>
+        <rect x="104" y="76" width="4" height="20" rx="2" fill="#c0c0c0"/>
+        <rect x="101" y="74" width="10" height="4" rx="2" fill="#a0a0a0"/>
+        <polygon points="106,96 103,106 109,106" fill="#d0d0d0"/>
+      </svg>
+    );
+  }
+
+  if (role?.id === "police") {
+    return (
+      <svg viewBox="0 0 160 160" width="140" height="140" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="80" cy="60" r="32" fill="#0a1a2a"/>
+        <ellipse cx="80" cy="58" rx="22" ry="24" fill="#fad7a0"/>
+        <rect x="62" y="34" width="36" height="20" rx="5" fill="#154360"/>
+        <rect x="60" y="44" width="40" height="10" rx="3" fill="#0d2b40"/>
+        <rect x="66" y="34" width="28" height="5" rx="3" fill="#2980b9"/>
+        <polygon points="80,28 88,36 72,36" fill="#2980b9"/>
+        <rect x="74" y="26" width="12" height="5" rx="2" fill="#f0c040"/>
+        <ellipse cx="70" cy="59" rx="5" ry="4" fill="#fff"/>
+        <ellipse cx="90" cy="59" rx="5" ry="4" fill="#fff"/>
+        <ellipse cx="71" cy="60" rx="3" ry="3" fill="#0d2b40"/>
+        <ellipse cx="91" cy="60" rx="3" ry="3" fill="#0d2b40"/>
+        <ellipse cx="72" cy="59" rx="1" ry="1" fill="#fff"/>
+        <ellipse cx="92" cy="59" rx="1" ry="1" fill="#fff"/>
+        <path d="M66 55 Q70 52 74 55" fill="none" stroke="#0d2b40" stroke-width="1.2" stroke-linecap="round"/>
+        <path d="M76 68 Q80 73 84 68" fill="none" stroke="#c8906a" stroke-width="1.5" stroke-linecap="round"/>
+        <ellipse cx="65" cy="66" rx="4" ry="2.5" fill="#f0a88a" opacity="0.5"/>
+        <ellipse cx="95" cy="66" rx="4" ry="2.5" fill="#f0a88a" opacity="0.5"/>
+        <rect x="58" y="88" width="44" height="42" rx="10" fill="#154360"/>
+        <rect x="66" y="94" width="28" height="5" rx="2" fill="#f0c040"/>
+        <circle cx="80" cy="96" r="3" fill="#154360"/>
+        <rect x="66" y="102" width="12" height="24" rx="5" fill="#0d2b40"/>
+        <rect x="82" y="102" width="12" height="24" rx="5" fill="#0d2b40"/>
+        <rect x="66" y="120" width="9" height="10" rx="3" fill="#091820"/>
+        <rect x="85" y="120" width="9" height="10" rx="3" fill="#091820"/>
+        <rect x="46" y="94" width="13" height="30" rx="5" fill="#154360"/>
+        <rect x="101" y="94" width="13" height="30" rx="5" fill="#154360"/>
+        <circle cx="48" cy="96" r="5" fill="#fad7a0"/>
+        <circle cx="112" cy="96" r="5" fill="#fad7a0"/>
+        <rect x="104" y="104" width="12" height="7" rx="2" fill="#f0c040"/>
+        <circle cx="110" cy="108" r="2" fill="#154360"/>
+        <circle cx="48" cy="122" r="6" fill="#fad7a0"/>
+        <circle cx="112" cy="122" r="6" fill="#fad7a0"/>
+      </svg>
+    );
+  }
+
+  const variantColors = {
+    cheerful: { skin: "#fad7a0", body: "#27ae60", dark: "#1e8449", hair: "#c0392b", cheek: "#f4a77e" },
+    mystic:   { skin: "#f5cba7", body: "#8e44ad", dark: "#6c3483", hair: "#4a235a", cheek: "#f0a88a" },
+    noble:    { skin: "#fae5d3", body: "#b7950b", dark: "#9a7d0a", hair: "#1a1a1a", cheek: "#f0a88a" },
+    rebel:    { skin: "#fad7a0", body: "#e67e22", dark: "#ca6f1e", hair: "#1a1a1a", cheek: "#f4a77e" },
+    scholar:  { skin: "#faebd7", body: "#2471a3", dark: "#1a5276", hair: "#5d4037", cheek: "#f0a88a" },
+  };
+  const c = variantColors[role?.variant] || variantColors.cheerful;
+
+  return (
+    <svg viewBox="0 0 160 160" width="140" height="140" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="80" cy="60" r="32" fill="#111"/>
+      <ellipse cx="80" cy="58" rx="22" ry="24" fill={c.skin}/>
+      <path d="M58 50 Q60 34 80 32 Q100 34 102 50 Q96 38 80 36 Q64 38 58 50Z" fill={c.hair}/>
+      <ellipse cx="70" cy="58" rx="5" ry="4" fill="#fff"/>
+      <ellipse cx="90" cy="58" rx="5" ry="4" fill="#fff"/>
+      <ellipse cx="71" cy="59" rx="3" ry="3" fill="#2c3e50"/>
+      <ellipse cx="91" cy="59" rx="3" ry="3" fill="#2c3e50"/>
+      <ellipse cx="72" cy="58" rx="1" ry="1" fill="#fff"/>
+      <ellipse cx="92" cy="58" rx="1" ry="1" fill="#fff"/>
+      <path d="M75 68 Q80 74 85 68" fill="none" stroke="#c8906a" stroke-width="1.8" stroke-linecap="round"/>
+      <ellipse cx="65" cy="66" rx="5" ry="3" fill={c.cheek} opacity="0.6"/>
+      <ellipse cx="95" cy="66" rx="5" ry="3" fill={c.cheek} opacity="0.6"/>
+      <rect x="58" y="88" width="44" height="42" rx="10" fill={c.body}/>
+      <rect x="64" y="96" width="32" height="10" rx="0" fill={c.dark}/>
+      <path d="M67 96 Q80 103 93 96" fill="#f0c040" opacity="0.6"/>
+      <rect x="66" y="108" width="12" height="18" rx="5" fill={c.dark}/>
+      <rect x="82" y="108" width="12" height="18" rx="5" fill={c.dark}/>
+      <rect x="66" y="120" width="9" height="10" rx="3" fill={c.dark}/>
+      <rect x="85" y="120" width="9" height="10" rx="3" fill={c.dark}/>
+      <rect x="46" y="94" width="13" height="30" rx="5" fill={c.body}/>
+      <rect x="101" y="94" width="13" height="30" rx="5" fill={c.body}/>
+      <circle cx="48" cy="122" r="6" fill={c.skin}/>
+      <circle cx="112" cy="122" r="6" fill={c.skin}/>
+    </svg>
+  );
+}
+
 function RoleRevealScreen({ role, game, room, username, cardFlipped, setCardFlipped, onAccuse, onBack }) {
   const [showAccuse, setShowAccuse] = useState(false);
   const isPolice = role?.id === "police";
@@ -463,14 +574,13 @@ function RoleRevealScreen({ role, game, room, username, cardFlipped, setCardFlip
   return (
     <div className="screen role-screen">
       <div className="role-screen-bg" style={{ "--accent": role?.color || "#e63946" }} />
-
       <div className="role-screen-content">
-        <div className="role-label">Your role</div>
+        <div className="role-label">Your role — keep this secret!</div>
 
         <div
           className={`role-card ${cardFlipped ? "flipped" : ""}`}
           onClick={() => !cardFlipped && setCardFlipped(true)}
-          style={{ "--accent": role?.color || "#e63946" }}
+          style={{ "--accent": role?.color || "#e63946", "--accent2": role?.accent || "#e63946" }}
         >
           <div className="role-card-front">
             <div className="card-front-inner">
@@ -480,16 +590,15 @@ function RoleRevealScreen({ role, game, room, username, cardFlipped, setCardFlip
           </div>
           <div className="role-card-back">
             <div className="card-back-inner">
-              <div className="card-corner card-corner-tl">{role?.name?.[0]}</div>
-              <div className="card-corner card-corner-br">{role?.name?.[0]}</div>
+              <div className="card-corner card-corner-tl">{role?.letter || role?.name?.[0]}</div>
+              <div className="card-corner card-corner-tr">{role?.suit || "♠"}</div>
+              <div className="card-corner card-corner-br">{role?.letter || role?.name?.[0]}</div>
+              <div className="card-corner card-corner-bl">{role?.suit || "♠"}</div>
               <div className="card-art-placeholder">
-                <div className="card-art-icon">
-                  {role?.id === "killer" ? "🔪" : role?.id === "police" ? "🕵️" : "👤"}
-                </div>
-                <p className="card-art-hint">Art coming soon</p>
+                <RoleArt role={role} />
               </div>
               <div className="card-divider" />
-              <div className="card-role-name">{role?.name}</div>
+              <div className="card-role-name">{role?.name?.toUpperCase()}</div>
               <div className="card-role-desc">{role?.description}</div>
             </div>
           </div>
@@ -498,11 +607,10 @@ function RoleRevealScreen({ role, game, room, username, cardFlipped, setCardFlip
         {cardFlipped && (
           <div className="role-actions">
             {isPolice && (
-              <button className="btn-accent" onClick={() => setShowAccuse(!showAccuse)}>
+              <button className="btn-accent" style={{"--accent": role?.color}} onClick={() => setShowAccuse(!showAccuse)}>
                 {showAccuse ? "Cancel accusation" : "Accuse a player"}
               </button>
             )}
-
             {showAccuse && (
               <div className="accuse-list">
                 <p className="accuse-label">Who is the killer?</p>
@@ -513,7 +621,6 @@ function RoleRevealScreen({ role, game, room, username, cardFlipped, setCardFlip
                 ))}
               </div>
             )}
-
             <button className="btn-ghost" onClick={onBack}>Back to lobby</button>
           </div>
         )}

@@ -19,38 +19,41 @@ function genCode() {
   return Array.from({ length: 4 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
 }
 
+const CIVILIAN_VARIANTS = [
+  { variant: 'cheerful', color: '#27ae60', accent: '#2ecc71', letter: 'C', suit: '♣', icon: '😄' },
+  { variant: 'mystic',   color: '#8e44ad', accent: '#c39bd3', letter: 'C', suit: '♣', icon: '🔮' },
+  { variant: 'noble',    color: '#d4a017', accent: '#f1c40f', letter: 'C', suit: '♣', icon: '👑' },
+  { variant: 'rebel',    color: '#e67e22', accent: '#f39c12', letter: 'C', suit: '♣', icon: '🤘' },
+  { variant: 'scholar',  color: '#2471a3', accent: '#5dade2', letter: 'C', suit: '♣', icon: '📚' },
+];
+
 const KILLER_ROLES = [
   {
-    id: 'killer',
-    name: 'The Killer',
-    type: 'villain',
+    id: 'killer', name: 'The Killer', type: 'villain',
     description: 'You are the secret killer! Wink at players one by one to silently eliminate them. Stay cool — if the police catches your wink, you lose!',
-    team: 'evil',
-    color: '#c0392b'
+    team: 'evil', color: '#c0392b', accent: '#e74c3c', letter: 'K', suit: '♠', icon: '🔪'
   },
   {
-    id: 'police',
-    name: 'The Police',
-    type: 'hero',
+    id: 'police', name: 'The Police', type: 'hero',
     description: 'You are the detective! Watch everyone\'s eyes very carefully. When you spot the killer winking, point at them and shout your accusation!',
-    team: 'good',
-    color: '#2980b9'
+    team: 'good', color: '#2980b9', accent: '#4fc3f7', letter: 'P', suit: '♦', icon: '🕵️'
   },
   {
-    id: 'civilian',
-    name: 'Civilian',
-    type: 'neutral',
+    id: 'civilian', name: 'Civilian', type: 'neutral',
     description: 'You are an innocent bystander! If the killer winks at you, dramatically announce you\'ve been eliminated. Help the police find the killer!',
-    team: 'neutral',
-    color: '#27ae60'
+    team: 'neutral', color: '#27ae60', accent: '#2ecc71', letter: 'C', suit: '♣', icon: '👤'
   }
 ];
 
 function assignKillerRoles(playerCount) {
   const roles = [];
-  roles.push('killer');
-  roles.push('police');
-  for (let i = 2; i < playerCount; i++) roles.push('civilian');
+  roles.push({ ...KILLER_ROLES[0] });
+  roles.push({ ...KILLER_ROLES[1] });
+  const shuffledVariants = [...CIVILIAN_VARIANTS].sort(() => Math.random() - 0.5);
+  for (let i = 2; i < playerCount; i++) {
+    const v = shuffledVariants[(i - 2) % shuffledVariants.length];
+    roles.push({ ...KILLER_ROLES[2], ...v });
+  }
   for (let i = roles.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [roles[i], roles[j]] = [roles[j], roles[i]];
@@ -105,10 +108,10 @@ io.on('connection', (socket) => {
     if (room.players.length < 3) return socket.emit('error', { message: 'Need at least 3 players to start.' });
 
     room.status = 'playing';
-    const roleIds = assignKillerRoles(room.players.length);
+    const assignedRoles = assignKillerRoles(room.players.length);
 
     room.players.forEach((player, i) => {
-      const roleData = KILLER_ROLES.find(r => r.id === roleIds[i]);
+      const roleData = assignedRoles[i];
       player.role = roleData;
       io.to(player.id).emit('role_assigned', { role: roleData });
     });
