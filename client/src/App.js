@@ -99,7 +99,7 @@ export default function App() {
       setScreen(SCREENS.WW_NIGHT);
     });
     socket.on("ww_night_role_changed", ({ currentNightRole }) => { setWwCurrentNightRole(currentNightRole); setWwIsMyTurn(false); setWwSeerResult(null); });
-    socket.on("ww_your_turn",   ({ roleId, targets }) => { setWwIsMyTurn(true); setWwTargets(targets); });
+    socket.on("ww_your_turn",   ({ slot, roleId, targets }) => { setWwIsMyTurn(true); setWwTargets(targets); });
     socket.on("ww_waiting",     () => { setWwIsMyTurn(false); });
     socket.on("ww_seer_result", ({ targetName, reveal }) => { setWwSeerResult({ targetName, reveal }); });
     socket.on("ww_witch_info",  ({ victim, potions }) => { setWwWitchInfo({ victim, potions }); });
@@ -839,10 +839,10 @@ function WwNightScreen({ role, narration, currentNightRole, isMyTurn, targets, o
         {isMyTurn && role?.id !== 'witch' && (
           <div className="ww-action-panel">
             <p className="ww-action-prompt">
-              {role?.id === 'werewolf' || role?.id === 'alpha' ? 'Choose your victim:' :
-               role?.id === 'seer'      ? 'Investigate a player:' :
-               role?.id === 'doctor'    ? 'Choose who to save:' :
-               role?.id === 'bodyguard' ? 'Choose who to guard:' : 'Choose:'}
+              {role?.id === 'werewolf' || role?.id === 'alpha' ? '🐺 Choose your victim:' :
+               role?.id === 'seer'      ? '🔮 Investigate a player:' :
+               role?.id === 'doctor'    ? '💊 Choose who to save:' :
+               role?.id === 'bodyguard' ? '🛡 Choose who to guard:' : 'Choose:'}
             </p>
             {targets.map(t => (
               <button key={t.id} className="ww-target-btn" onClick={() => onAction(role?.id, t.id)}>{t.username}</button>
@@ -904,10 +904,10 @@ function WwDayScreen({ role, narration, dayNumber, results, alivePlayers, votes,
           </div>
         )}
 
-        {hunterActive && amAlive && (
+        {hunterActive && (
           <div className="ww-hunter-panel">
-            <p className="ww-action-prompt">🏹 You are the Hunter! Choose your final target:</p>
-            {alivePlayers?.filter(p => p.id !== myId).map(t => (
+            <p className="ww-action-prompt">🏹 You are the Hunter! Take one last target:</p>
+            {alivePlayers?.map(t => (
               <button key={t.id} className="ww-target-btn danger" onClick={() => onHunterRevenge(t.id)}>{t.username}</button>
             ))}
           </div>
@@ -945,8 +945,11 @@ function WwDayScreen({ role, narration, dayNumber, results, alivePlayers, votes,
 
         {phase === 'vote' && !amAlive && <p className="ww-dead-notice">You are dead. You may observe but cannot vote.</p>}
 
-        {isHost && (
+        {isHost && phase !== 'vote' && (
           <button className="btn-ww-primary" style={{marginTop:'16px'}} onClick={onBeginNight}>Begin Next Night →</button>
+        )}
+        {isHost && phase === 'vote' && (
+          <button className="btn-ww-primary" style={{marginTop:'16px',opacity:0.4}} disabled>Resolve votes first</button>
         )}
       </div>
     </div>

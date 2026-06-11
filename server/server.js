@@ -88,11 +88,20 @@ function assignWerewolfRoles(players, settings) {
 }
 
 // ─── NIGHT ACTION ORDER ──────────────────────────────────────────
-const NIGHT_ORDER = ['werewolf','alpha','seer','doctor','witch','bodyguard'];
+// Slots group roles that share a turn; key = action stored in nightActions
+const NIGHT_SLOTS = [
+  { slot: 'wolves',    roles: ['werewolf','alpha'], actionKey: 'kill'    },
+  { slot: 'seer',      roles: ['seer'],             actionKey: 'inspect' },
+  { slot: 'doctor',    roles: ['doctor'],            actionKey: 'save'    },
+  { slot: 'witch',     roles: ['witch'],             actionKey: 'witch'   },
+  { slot: 'bodyguard', roles: ['bodyguard'],         actionKey: 'guard'   },
+];
 
 function getNextNightRole(nightActions, roles) {
-  for (const rid of NIGHT_ORDER) {
-    if (roles.some(r => r.id === rid) && !nightActions[rid]) return rid;
+  for (const { slot, roles: slotRoles, actionKey } of NIGHT_SLOTS) {
+    const hasRole = roles.some(r => slotRoles.includes(r.id));
+    const actionDone = nightActions[actionKey] !== undefined;
+    if (hasRole && !actionDone) return slot;
   }
   return null;
 }
@@ -194,12 +203,15 @@ io.on('connection', (socket) => {
 
     room.players.forEach((p, i) => { p.role = assigned[i]; p.alive = true; p.eliminated = false; });
     room.status = 'playing';
+    const aliveWolfCount = room.players.filter(p => ['werewolf','alpha'].includes(p.role?.id)).length;
     room.werewolf = {
       phase: 'role_reveal',
       dayNumber: 0,
       settings,
       wolfIds,
       nightActions: {},
+      wolfKillVotes: {},
+      aliveWolfCount,
       votes: {},
       currentNightRole: null,
       witchPotions: { save: true, poison: true },
@@ -229,6 +241,8 @@ io.on('connection', (socket) => {
     ww.phase = 'night';
     ww.dayNumber++;
     ww.nightActions = {};
+    ww.wolfKillVotes = {};
+    ww.aliveWolfCount = room.players.filter(p => p.alive && ['werewolf','alpha'].includes(p.role?.id)).length;
     ww.currentNightRole = null;
 
     const alivePlayers = room.players.filter(p => p.alive);
@@ -254,12 +268,28 @@ io.on('connection', (socket) => {
     if (!player || !player.alive) return;
 
     const roleId = player.role?.id;
-    if (roleId === 'werewolf' || roleId === 'alpha') ww.nightActions.kill = targetId;
-    if (roleId === 'seer') ww.nightActions.inspect = targetId;
-    if (roleId === 'doctor') ww.nightActions.save = targetId;
+    if (roleId === 'werewolf' || roleId === 'alpha') {
+      // Collect each wolf's vote — majority wins, or last vote if tied
+      ww.wolfKillVotes[socket.id] = targetId;
+      const allWolvesVoted = Object.keys(ww.wolfKillVotes).length >= ww.aliveWolfCount;
+      if (allWolvesVoted) {
+        // Pick most-voted target; tie = last vote
+        const tally = {};
+        Object.values(ww.wolfKillVotes).forEach(id => { tally[id] = (tally[id]||0)+1; });
+        const max = Math.max(...Object.values(tally));
+        const top = Object.keys(tally).filter(id => tally[id] === max);
+        ww.nightActions.kill = top[top.length - 1];
+      } else {
+        // Not all wolves voted yet — don't advance
+        return;
+      }
+    }
+    if (roleId === 'seer')      ww.nightActions.inspect = targetId;
+    if (roleId === 'doctor')    ww.nightActions.save = targetId;
     if (roleId === 'bodyguard') ww.nightActions.guard = targetId;
     if (roleId === 'witch') {
-      if (action === 'save') ww.nightActions.save = targetId;
+      ww.nightActions.witch = action;
+      if (action === 'save')   ww.nightActions.save = targetId;
       if (action === 'poison') ww.nightActions.poison = targetId;
     }
 
@@ -293,11 +323,17 @@ io.on('connection', (socket) => {
     }
   });
 
-  // SKIP NIGHT ACTION (for roles with no alive player)
+  // SKIP NIGHT ACTION (host skips a role that has no action)
   socket.on('ww_skip_night_role', () => {
     const code = socket.roomCode; const room = rooms[code];
     if (!room || !room.werewolf || room.host !== socket.id) return;
     const ww = room.werewolf;
+    // Mark current slot as done with a sentinel so getNextNightRole advances
+    const currentSlot = ww.currentNightRole;
+    if (currentSlot) {
+      const slotDef = NIGHT_SLOTS.find(s => s.slot === currentSlot);
+      if (slotDef) ww.nightActions[slotDef.actionKey] = '__skipped__';
+    }
     const alivePlayers = room.players.filter(p => p.alive);
     const aliveRoles = alivePlayers.map(p => p.role);
     const next = getNextNightRole(ww.nightActions, aliveRoles);
@@ -354,16 +390,19 @@ io.on('connection', (socket) => {
 });
 
 // ─── HELPERS ─────────────────────────────────────────────────────
-function notifyNightRole(code, room, roleId) {
+function notifyNightRole(code, room, slot) {
   const alivePlayers = room.players.filter(p => p.alive);
+  const slotDef = NIGHT_SLOTS.find(s => s.slot === slot);
+  const slotRoles = slotDef ? slotDef.roles : [slot];
   alivePlayers.forEach(p => {
-    if (p.role?.id === roleId || (roleId === 'werewolf' && p.role?.id === 'alpha')) {
+    if (slotRoles.includes(p.role?.id)) {
       io.to(p.id).emit('ww_your_turn', {
-        roleId,
+        slot,
+        roleId: p.role.id,
         targets: alivePlayers.filter(t => t.id !== p.id).map(t => ({ id: t.id, username: t.username })),
       });
     } else {
-      io.to(p.id).emit('ww_waiting', { currentRole: roleId });
+      io.to(p.id).emit('ww_waiting', { currentSlot: slot });
     }
   });
 }
